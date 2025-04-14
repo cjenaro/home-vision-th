@@ -15,6 +15,7 @@
 - Dark and light mode support
 - server side rendering and client side fetching of data.
 - retry logic for failed requests using [exponential backoff](https://medium.com/bobble-engineering/how-does-exponential-backoff-work-90ef02401c65)
+- link to google maps with search API
 
 ## Getting Started
 
