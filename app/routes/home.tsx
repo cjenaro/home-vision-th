@@ -1,5 +1,5 @@
 import { useLoaderData } from "react-router";
-import { data, useFetcher, useNavigate } from "react-router";
+import { data, useFetcher } from "react-router";
 import type { Route } from "./+types/home";
 import { useState, useEffect, useRef } from "react";
 import type { House } from "./houses";
