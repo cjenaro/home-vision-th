@@ -152,12 +152,14 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">Available Houses</h1>
-      <div className="flex justify-center mb-8 items-center gap-2 border border-gray-300 rounded-md p-2 w-fit mx-auto">
+      <h1 className="text-3xl font-bold text-center mb-8 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
+        Available Houses
+      </h1>
+      <div className="flex justify-center mb-8 items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-md p-2 w-fit mx-auto text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
         <label htmlFor="perPage">Per Page:</label>
         <input
           id="perPage"
-          className="w-24 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-24 p-2 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] bg-transparent"
           type="number"
           name="per_page"
           defaultValue={10}
@@ -194,14 +196,14 @@ export function ErrorBoundary() {
   const navigate = useNavigate();
   return (
     <div className="container grid place-items-center px-4 py-16 text-center min-h-screen mx-auto">
-      <div className="bg-white/10 dark:bg-white/5 border border-red-300 dark:border-red-800 rounded-lg p-8 max-w-md flex flex-col items-center">
+      <div className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] border border-[hsl(var(--destructive))] dark:border-[hsl(var(--dark-destructive))] rounded-lg p-8 max-w-md flex flex-col items-center shadow-lg">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-12 mx-auto mb-4 text-red-500 dark:text-red-500"
+          className="size-12 mx-auto mb-4 text-[hsl(var(--destructive))] dark:text-[hsl(var(--dark-destructive))]"
         >
           <path
             strokeLinecap="round"
@@ -209,15 +211,15 @@ export function ErrorBoundary() {
             d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
           />
         </svg>
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+        <h2 className="text-2xl font-bold text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] mb-3">
           Something went wrong
         </h2>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">
+        <p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] opacity-80 dark:opacity-70 mb-6">
           We couldn't load the houses. Please try again.
         </p>
         <button
           onClick={() => navigate("/")}
-          className="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-6 rounded-md transition-colors cursor-pointer flex items-center gap-2"
+          className="button-primary flex gap-2 items-center"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

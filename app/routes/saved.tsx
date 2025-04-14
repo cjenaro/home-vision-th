@@ -141,10 +141,7 @@ export default function Saved() {
                       value={JSON.stringify(house)}
                     />
                     <input type="hidden" name="intent" value="remove" />
-                    <button
-                      type="submit"
-                      className="text-red-500 hover:text-red-600 bg-red-500/10 px-4 py-2 rounded-md cursor-pointer hover:bg-red-500/20 transition-colors"
-                    >
+                    <button type="submit" className="button-destructive">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"

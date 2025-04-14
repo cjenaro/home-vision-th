@@ -15,7 +15,7 @@ export function HouseCard({
   const isSaving = intent === "save";
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20 relative">
+    <div className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-none relative dark:border dark:border-[hsl(var(--dark-foreground))]/30">
       <img
         src={house.photoURL}
         alt={house.address}
@@ -23,14 +23,16 @@ export function HouseCard({
         className="aspect-video w-full object-cover"
       />
       <div className="p-4">
-        <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+        <h3 className="text-xl font-bold text-[hsl(var(--primary))] dark:text-[hsl(var(--dark-primary))] mb-2">
           {house.price.toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
           })}
         </h3>
-        <p className="text-gray-700 dark:text-gray-300 mb-2">{house.address}</p>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] mb-2">
+          {house.address}
+        </p>
+        <p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] text-sm opacity-80 dark:opacity-70">
           Homeowner: {house.homeowner}
         </p>
       </div>
@@ -45,10 +47,9 @@ export function HouseCard({
 
           <button
             type="submit"
-            className="bg-gray-100 dark:bg-gray-800 absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer"
+            className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer border-b border-l border-r border-gray-200 dark:border-gray-700"
             disabled={fetcher.state !== "idle"}
           >
-            {/* if no intent it means no submission, show isSaved from session, if intent then optimistically update */}
             <SaveIcon isSaved={!intent ? isSaved : isSaving} />
           </button>
         </fetcher.Form>
