@@ -54,7 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-        <header className="bg-white/10 dark:bg-black/10 py-4">
+        <header className="sticky top-0 z-10 bg-white/10 dark:bg-black/10 py-4 backdrop-blur-sm">
           <div className="container mx-auto px-4 flex justify-between items-center">
             <Link to="/">
               <img
