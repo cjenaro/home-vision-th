@@ -76,7 +76,7 @@ export default function Home() {
 
 function HouseCard({ house }: { house: House }) {
   return (
-    <div className="bg-white rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out">
+    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20">
       <div className="relative pb-[56.25%]">
         <img
           src={house.photoURL}
@@ -86,14 +86,16 @@ function HouseCard({ house }: { house: House }) {
         />
       </div>
       <div className="p-4">
-        <h3 className="text-xl font-bold text-blue-600 mb-2">
+        <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">
           {house.price.toLocaleString("en-US", {
             style: "currency",
             currency: "USD",
           })}
         </h3>
-        <p className="text-gray-700 mb-2">{house.address}</p>
-        <p className="text-gray-600 text-sm">Homeowner: {house.homeowner}</p>
+        <p className="text-gray-700 dark:text-gray-300 mb-2">{house.address}</p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Homeowner: {house.homeowner}
+        </p>
       </div>
     </div>
   );
@@ -101,14 +103,14 @@ function HouseCard({ house }: { house: House }) {
 
 function HouseCardSkeleton() {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden animate-pulse h-full">
       <div className="relative pb-[56.25%]">
-        <div className="absolute inset-0 w-full h-full bg-gray-200" />
+        <div className="absolute inset-0 w-full h-full bg-gray-200 dark:bg-gray-700" />
       </div>
       <div className="p-4">
-        <div className="w-24 h-6 bg-gray-200 rounded mb-3" />
-        <div className="w-32 h-4 bg-gray-200 rounded mb-2" />
-        <div className="w-24 h-4 bg-gray-200 rounded" />
+        <div className="w-24 h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
+        <div className="w-32 h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+        <div className="w-24 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
       </div>
     </div>
   );
@@ -118,14 +120,14 @@ export function ErrorBoundary() {
   const navigate = useNavigate();
   return (
     <div className="container grid place-items-center px-4 py-16 text-center min-h-screen mx-auto">
-      <div className="bg-white/10 border border-red-300 rounded-lg p-8 max-w-md flex flex-col items-center">
+      <div className="bg-white/10 dark:bg-white/5 border border-red-300 dark:border-red-800 rounded-lg p-8 max-w-md flex flex-col items-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="size-12 mx-auto mb-4 text-red-300"
+          className="size-12 mx-auto mb-4 text-red-500 dark:text-red-500"
         >
           <path
             strokeLinecap="round"
@@ -133,10 +135,10 @@ export function ErrorBoundary() {
             d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
           />
         </svg>
-        <h2 className="text-2xl font-bold text-gray-100 mb-3">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">
           Something went wrong
         </h2>
-        <p className="text-gray-300 mb-6">
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
           We couldn't load the houses. Please try again.
         </p>
         <button

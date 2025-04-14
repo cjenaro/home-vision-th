@@ -1,5 +1,6 @@
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -27,14 +28,25 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark:bg-gray-900 dark:text-white">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <header className="bg-white/10 dark:bg-black/10 py-4">
+          <div className="container mx-auto px-4">
+            <Link to="/" className="inline-block">
+              <img
+                src="/logo.png"
+                alt="HomeVision"
+                className="h-10 invert-100 grayscale-100"
+              />
+            </Link>
+          </div>
+        </header>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -67,7 +79,9 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-      <h1 className="text-9xl font-bold text-gray-800 mb-4">{message}</h1>
+      <h1 className="text-9xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+        {message}
+      </h1>
       <p className="text-xl mb-8 max-w-md">{details}</p>
       {isRouteError && (
         <a
@@ -78,7 +92,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         </a>
       )}
       {stack && (
-        <pre className="w-full max-w-2xl p-4 overflow-x-auto bg-gray-100 rounded text-left">
+        <pre className="w-full max-w-2xl p-4 overflow-x-auto bg-gray-100 dark:bg-gray-800 rounded text-left">
           <code className="text-sm">{stack}</code>
         </pre>
       )}
