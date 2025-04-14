@@ -191,6 +191,9 @@ function SaveIcon({ isSaved }: { isSaved: boolean }) {
 
 function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
   const fetcher = useFetcher();
+  const intent = fetcher.formData?.get("intent");
+
+  const isSaving = intent === "save";
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20 relative">
@@ -228,7 +231,8 @@ function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
             className="bg-gray-100 dark:bg-gray-800 absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer"
             disabled={fetcher.state !== "idle"}
           >
-            <SaveIcon isSaved={isSaved} />
+            {/* if no intent it means no submission, show isSaved from session, if intent then optimistically update */}
+            <SaveIcon isSaved={!intent ? isSaved : isSaving} />
           </button>
         </fetcher.Form>
       </div>
