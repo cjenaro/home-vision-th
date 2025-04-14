@@ -153,28 +153,47 @@ export default function Home() {
   );
 }
 
-function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
-  const fetcher = useFetcher();
-  function getButtonText() {
-    const isSaving = fetcher.formData?.get("intent") === "save";
-    const isRemoving = fetcher.formData?.get("intent") === "remove";
-
-    if (isSaving) {
-      return "Saving...";
-    }
-
-    if (isRemoving) {
-      return "Removing...";
-    }
-
-    if (isSaved) {
-      return "Saved";
-    }
-    return "Save";
+function SaveIcon({ isSaved }: { isSaved: boolean }) {
+  if (isSaved) {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="size-6 text-indigo-500"
+      >
+        <path
+          fillRule="evenodd"
+          d="M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z"
+          clipRule="evenodd"
+        />
+      </svg>
+    );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      className="size-6 text-indigo-500"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+      />
+    </svg>
+  );
+}
+
+function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
+  const fetcher = useFetcher();
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20 relative">
       <div className="relative pb-[56.25%]">
         <img
           src={house.photoURL}
@@ -206,14 +225,10 @@ function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
 
           <button
             type="submit"
-            className={`font-medium py-2 px-4 rounded-md transition-colors cursor-pointer ${
-              isSaved
-                ? "bg-gray-500 hover:bg-gray-600 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
+            className="bg-gray-100 dark:bg-gray-800 absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer"
             disabled={fetcher.state !== "idle"}
           >
-            {getButtonText()}
+            <SaveIcon isSaved={isSaved} />
           </button>
         </fetcher.Form>
       </div>
