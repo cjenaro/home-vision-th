@@ -1,5 +1,8 @@
 # HomeVision Takehome
 
+![Screen Shot 2025-04-14 at 16 30 33](https://github.com/user-attachments/assets/03ffbf9b-8c11-4be1-9d57-feca19d63cb0)
+![Screen Shot 2025-04-14 at 16 30 44](https://github.com/user-attachments/assets/e7d6f8f5-f30e-4642-8ffe-a5a2be9ae28d)
+
 ## Stack
 
 - 🔒 TypeScript
