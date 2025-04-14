@@ -9,7 +9,8 @@
 - 🔒 TypeScript
 - 🎉 TailwindCSS for styling
 - 📖 [React Router v7](https://reactrouter.com/)
-
+- 📖 [Biome](https://biomejs.dev/) for linting and formatting
+- 📖 [Kamal](https://kamal-deploy.org/) for deployment
 
 ## Features
 
