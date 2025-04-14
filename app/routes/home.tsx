@@ -49,23 +49,61 @@ export default function Home() {
   }, [loadMoreRef, fetcher.state]);
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold fixed top-0 right-0">{fetcher.data?.page}</h2>
-      {houses.map((house) => (
-        <div key={house.id}>
-          <h3>{house.address}</h3>
-          <img
-            src={house.photoURL}
-            alt={house.address}
-            width="200"
-            loading="lazy"
-          />
-          <p>Price: ${house.price}</p>
-          <p>Homeowner: {house.homeowner}</p>
-        </div>
-      ))}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Available Houses</h1>
+      <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {houses.map((house) => (
+          <li key={house.id}>
+            <HouseCard house={house} />
+          </li>
+        ))}
+        {fetcher.state === "loading" && (
+          <li>
+            <HouseCardSkeleton />
+          </li>
+        )}
+      </ul>
       <div ref={loadMoreRef} className="h-2" />
-      {fetcher.state === "loading" && <p>Loading more houses...</p>}
+    </div>
+  );
+}
+
+function HouseCard({ house }: { house: House }) {
+  return (
+    <div className="bg-white rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out">
+      <div className="relative pb-[56.25%]">
+        <img
+          src={house.photoURL}
+          alt={house.address}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-4">
+        <h3 className="text-xl font-bold text-blue-600 mb-2">
+          {house.price.toLocaleString("en-US", {
+            style: "currency",
+            currency: "USD",
+          })}
+        </h3>
+        <p className="text-gray-700 mb-2">{house.address}</p>
+        <p className="text-gray-600 text-sm">Homeowner: {house.homeowner}</p>
+      </div>
+    </div>
+  );
+}
+
+function HouseCardSkeleton() {
+  return (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse h-full">
+      <div className="relative pb-[56.25%]">
+        <div className="absolute inset-0 w-full h-full bg-gray-200" />
+      </div>
+      <div className="p-4">
+        <div className="w-24 h-6 bg-gray-200 rounded mb-3" />
+        <div className="w-32 h-4 bg-gray-200 rounded mb-2" />
+        <div className="w-24 h-4 bg-gray-200 rounded" />
+      </div>
     </div>
   );
 }

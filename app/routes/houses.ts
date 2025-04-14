@@ -9,14 +9,12 @@ export type House = {
   id: number;
 };
 
+const MAX_RETRIES = 3;
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   let page = parseInt(url.searchParams.get("page") || "1", 10);
 
-  const MAX_RETRIES = 3;
   let attempt = 0;
-
-  console.log("HOUSES LOADER CALLED with page:", page);
 
   while (attempt <= MAX_RETRIES) {
     try {
