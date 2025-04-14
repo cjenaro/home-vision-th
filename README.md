@@ -33,6 +33,9 @@ npm install
 
 ### Development
 
+Environment variables needed for development:
+- `COOKIE_SECRET` - the secret for the cookie session, can be added to the `.env` file and can be any random string
+
 Start the development server with HMR:
 
 ```bash
@@ -51,36 +54,17 @@ npm run build
 
 ## Deployment
 
-### Docker Deployment
-
-To build and run using Docker:
+The application is deployed to [Kamal](https://kamal-deploy.org/) to a VPS on Hetzner using the following command:
 
 ```bash
-docker build -t my-app .
+kamal deploy
+``` 
 
-# Run the container
-docker run -p 3000:3000 my-app
-```
+To deploy the app there are two kamal secrets that need to be set:
 
-The containerized application can be deployed to any platform that supports Docker, including:
+- `KAMAL_REGISTRY_PASSWORD` - the password for the docker registry
+- `COOKIE_SECRET` - the secret for the cookie session
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+These can be shared through a 1Password vault with the team,
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
+The application is available at https://home-vision.woodpecker.rocks/
