@@ -1,7 +1,9 @@
-import { useFetcher, useNavigate } from "react-router";
+import { useLoaderData } from "react-router";
+import { data, useFetcher, useNavigate } from "react-router";
 import type { Route } from "./+types/home";
 import { useState, useEffect, useRef } from "react";
 import type { House } from "./houses";
+import { getSession, commitSession } from "~/session.server";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,17 +12,80 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const savedHouseIds = session.get("savedHouseIds") || [];
+  const idSet = new Set(savedHouseIds);
+
+  return data({ savedHouseIds: Array.from(idSet) });
+}
+
+export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const formData = await request.formData();
+  const houseIdString = formData.get("houseId");
+  const intent = formData.get("intent");
+
+  if (
+    !["save", "remove"].includes(intent?.toString() || "") ||
+    typeof houseIdString !== "string"
+  ) {
+    return data(
+      { success: false, message: "Invalid request" },
+      { status: 400 }
+    );
+  }
+
+  const houseId = parseInt(houseIdString, 10);
+  if (isNaN(houseId)) {
+    return data(
+      { success: false, message: "Invalid house ID" },
+      { status: 400 }
+    );
+  }
+
+  const savedIds = session.get("savedHouseIds") || [];
+  const idSet = new Set(savedIds);
+
+  if (idSet.has(houseId)) {
+    idSet.delete(houseId);
+  } else {
+    idSet.add(houseId);
+  }
+
+  session.set("savedHouseIds", Array.from(idSet));
+
+  return data(
+    { success: true },
+    {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    }
+  );
+}
+
 export default function Home() {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<{ houses: House[]; page?: number }>();
+  const { savedHouseIds } = useLoaderData<typeof loader>();
   const [houses, setHouses] = useState<House[]>([]);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const lastProcessedPageRef = useRef<number>(0);
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
-      const data = fetcher.data?.houses;
+      const newHouses = fetcher.data.houses;
+      const currentPage = fetcher.data.page;
 
-      if (data && data.length > 0) {
-        setHouses((prevHouses) => [...prevHouses, ...data]);
+      // only update the houses if the page has changed.
+      if (
+        currentPage !== undefined &&
+        currentPage !== lastProcessedPageRef.current
+      ) {
+        if (newHouses && newHouses.length > 0) {
+          setHouses((prevHouses) => [...prevHouses, ...newHouses]);
+        }
+        lastProcessedPageRef.current = currentPage;
       }
     }
   }, [fetcher.state, fetcher.data]);
@@ -60,7 +125,10 @@ export default function Home() {
               animationDelay: `${(index % 10) * 100}ms`,
             }}
           >
-            <HouseCard house={house} />
+            <HouseCard
+              house={house}
+              isSaved={savedHouseIds.includes(house.id)}
+            />
           </li>
         ))}
         {fetcher.state === "loading" && (
@@ -74,7 +142,26 @@ export default function Home() {
   );
 }
 
-function HouseCard({ house }: { house: House }) {
+function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
+  const fetcher = useFetcher();
+  function getButtonText() {
+    const isSaving = fetcher.formData?.get("intent") === "save";
+    const isRemoving = fetcher.formData?.get("intent") === "remove";
+
+    if (isSaving) {
+      return "Saving...";
+    }
+
+    if (isRemoving) {
+      return "Removing...";
+    }
+
+    if (isSaved) {
+      return "Saved";
+    }
+    return "Save";
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20">
       <div className="relative pb-[56.25%]">
@@ -96,6 +183,23 @@ function HouseCard({ house }: { house: House }) {
         <p className="text-gray-600 dark:text-gray-400 text-sm">
           Homeowner: {house.homeowner}
         </p>
+      </div>
+      <div className="flex justify-end p-4">
+        <fetcher.Form method="post">
+          <input type="hidden" name="houseId" value={house.id.toString()} />
+          <input
+            type="hidden"
+            name="intent"
+            value={isSaved ? "remove" : "save"}
+          />
+
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer"
+          >
+            {getButtonText()}
+          </button>
+        </fetcher.Form>
       </div>
     </div>
   );

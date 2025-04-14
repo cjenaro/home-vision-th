@@ -75,5 +75,5 @@ export async function loader({ request }: Route.LoaderArgs) {
     } attempts failed for page ${page}. Returning empty data.`
   );
 
-  return { houses: [] };
+  return data({ houses: [], page });
 }
