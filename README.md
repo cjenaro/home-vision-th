@@ -1,18 +1,20 @@
-# Welcome to React Router!
+# HomeVision Takehome
 
-A modern, production-ready template for building full-stack React applications using React Router.
+## Stack
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+- 🔒 TypeScript
+- 🎉 TailwindCSS for styling
+- 📖 [React Router v7](https://reactrouter.com/)
+
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Infinite loading of house listings
+- Save houses to your own custom list on the cookie session
+- per page pagination
+- Dark and light mode support
+- server side rendering and client side fetching of data.
+- retry logic for failed requests using [exponential backoff](https://medium.com/bobble-engineering/how-does-exponential-backoff-work-90ef02401c65)
 
 ## Getting Started
 
@@ -77,11 +79,3 @@ Make sure to deploy the output of `npm run build`
 │   ├── client/    # Static assets
 │   └── server/    # Server-side code
 ```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
