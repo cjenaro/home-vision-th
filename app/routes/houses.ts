@@ -12,8 +12,11 @@ export type House = {
 const MAX_RETRIES = 3;
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
-  let page = parseInt(url.searchParams.get("page") || "1", 10);
-  let per_page = parseInt(url.searchParams.get("per_page") || "1000", 10);
+  const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
+  const per_page = Number.parseInt(
+    url.searchParams.get("per_page") || "1000",
+    10
+  );
 
   let attempt = 0;
 
@@ -48,7 +51,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     // [exponential backoff](https://medium.com/bobble-engineering/how-does-exponential-backoff-work-90ef02401c65)
-    const delay = 500 * Math.pow(2, attempt) + Math.random() * 100;
+    const delay = 500 * 2 ** attempt + Math.random() * 100;
     await new Promise((resolve) => setTimeout(resolve, delay));
     attempt++;
   }

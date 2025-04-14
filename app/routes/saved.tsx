@@ -82,7 +82,7 @@ export default function Saved() {
               <th scope="col" className="px-6 py-3">
                 Homeowner
               </th>
-              <th scope="col" className="px-6 py-3"></th>
+              <th scope="col" className="px-6 py-3" />
             </tr>
           </thead>
           <tbody>
@@ -112,6 +112,7 @@ export default function Saved() {
                       stroke="currentColor"
                       className="size-6"
                     >
+                      <title>Location Pin</title>
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -152,6 +153,7 @@ export default function Saved() {
                         stroke="currentColor"
                         className="size-6"
                       >
+                        <title>Delete</title>
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"

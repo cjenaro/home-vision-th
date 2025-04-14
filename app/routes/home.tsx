@@ -6,10 +6,11 @@ import type { House } from "./houses";
 import { getSession, commitSession } from "~/session.server";
 import { HouseCardSkeleton } from "~/components/house-card-skeleton";
 import { HouseCard } from "~/components/house-card";
+import { Link } from "react-router";
 
-function debounce(func: (...args: any[]) => void, wait: number) {
+function debounce<T>(func: (...args: T[]) => void, wait: number) {
   let timeout: NodeJS.Timeout;
-  return function (...args: any[]) {
+  return (...args: T[]) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
       func(...args);
@@ -22,11 +23,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   const savedHouses = session.get("savedHouses") || [];
 
   const uniqueHousesMap = new Map<number, House>();
-  savedHouses.forEach((house: House) => {
+  for (const house of savedHouses) {
     if (house && typeof house.id === "number") {
       uniqueHousesMap.set(house.id, house);
     }
-  });
+  }
 
   return data({ savedHouses: Array.from(uniqueHousesMap.values()) });
 }
@@ -124,7 +125,7 @@ export default function Home() {
           );
         }
       },
-      { threshold: 0.0 }
+      { threshold: 0.0, rootMargin: "0px 0px 500px 0px" }
     );
 
     const currentRef = loadMoreRef.current;
@@ -137,11 +138,11 @@ export default function Home() {
         observer.unobserve(currentRef);
       }
     };
-  }, [loadMoreRef, fetcher.state]);
+  }, [perPage, fetcher.state, fetcher.load, fetcher.data?.page]);
 
   function handlePerPageChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const newPerPage = parseInt(event.target.value, 10);
-    if (isNaN(newPerPage) || newPerPage <= 0) return;
+    const newPerPage = Number.parseInt(event.target.value, 10);
+    if (Number.isNaN(newPerPage) || newPerPage <= 0) return;
 
     setPerPage(newPerPage);
 
@@ -193,7 +194,6 @@ export default function Home() {
 }
 
 export function ErrorBoundary() {
-  const navigate = useNavigate();
   return (
     <div className="container grid place-items-center px-4 py-16 text-center min-h-screen mx-auto">
       <div className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] border border-[hsl(var(--destructive))] dark:border-[hsl(var(--dark-destructive))] rounded-lg p-8 max-w-md flex flex-col items-center shadow-lg">
@@ -205,6 +205,7 @@ export function ErrorBoundary() {
           stroke="currentColor"
           className="size-12 mx-auto mb-4 text-[hsl(var(--destructive))] dark:text-[hsl(var(--dark-destructive))]"
         >
+          <title>Warning</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -215,12 +216,9 @@ export function ErrorBoundary() {
           Something went wrong
         </h2>
         <p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] opacity-80 dark:opacity-70 mb-6">
-          We couldn't load the houses. Please try again.
+          We couldn't load the house listings. Please try again.
         </p>
-        <button
-          onClick={() => navigate("/")}
-          className="button-primary flex gap-2 items-center"
-        >
+        <Link to="/" className="button-primary flex gap-2 items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -229,6 +227,7 @@ export function ErrorBoundary() {
             stroke="currentColor"
             className="size-6"
           >
+            <title>Refresh</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -236,7 +235,7 @@ export function ErrorBoundary() {
             />
           </svg>
           Refresh Page
-        </button>
+        </Link>
       </div>
     </div>
   );

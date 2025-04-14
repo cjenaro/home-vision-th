@@ -29,7 +29,7 @@ export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/png", href: "favicon-16x16.png", sizes: "16x16" },
 ];
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "Home Vision" },
     { name: "description", content: "Home Vision's take home challenge" },
@@ -75,6 +75,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 stroke="currentColor"
                 className="size-8"
               >
+                <title>Saved</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
