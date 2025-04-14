@@ -1,4 +1,5 @@
 import {
+  data,
   isRouteErrorResponse,
   Link,
   Links,
@@ -6,10 +7,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { getSession } from "./session.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -26,7 +29,22 @@ export const links: Route.LinksFunction = () => [
   { rel: "icon", type: "image/png", href: "favicon-16x16.png", sizes: "16x16" },
 ];
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Home Vision" },
+    { name: "description", content: "Home Vision's take home challenge" },
+  ];
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const savedHouses = session.get("savedHouses") || [];
+  return data({ savedHousesCount: savedHouses.length });
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const loaderData = useLoaderData<typeof loader>();
+
   return (
     <html lang="en" className="dark:bg-gray-900 dark:text-white">
       <head>
@@ -37,13 +55,37 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
         <header className="bg-white/10 dark:bg-black/10 py-4">
-          <div className="container mx-auto px-4">
-            <Link to="/" className="inline-block">
+          <div className="container mx-auto px-4 flex justify-between items-center">
+            <Link to="/">
               <img
                 src="/logo.png"
                 alt="HomeVision"
                 className="h-10 invert-100 grayscale-100"
               />
+            </Link>
+            <Link
+              to="/saved"
+              className="relative hover:bg-white/10 rounded-full p-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-8"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
+                />
+              </svg>
+              {loaderData && loaderData.savedHousesCount > 0 && (
+                <span className="absolute top-2 right-2 bg-blue-600 text-white rounded-full size-4 text-xs text-center flex items-center justify-center">
+                  {loaderData.savedHousesCount}
+                </span>
+              )}
             </Link>
           </div>
         </header>

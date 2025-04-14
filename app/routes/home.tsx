@@ -5,30 +5,29 @@ import { useState, useEffect, useRef } from "react";
 import type { House } from "./houses";
 import { getSession, commitSession } from "~/session.server";
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Home Vision" },
-    { name: "description", content: "Home Vision's take home challenge" },
-  ];
-}
-
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  const savedHouseIds = session.get("savedHouseIds") || [];
-  const idSet = new Set(savedHouseIds);
+  const savedHouses = session.get("savedHouses") || [];
 
-  return data({ savedHouseIds: Array.from(idSet) });
+  const uniqueHousesMap = new Map<number, House>();
+  savedHouses.forEach((house: House) => {
+    if (house && typeof house.id === "number") {
+      uniqueHousesMap.set(house.id, house);
+    }
+  });
+
+  return data({ savedHouses: Array.from(uniqueHousesMap.values()) });
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const formData = await request.formData();
-  const houseIdString = formData.get("houseId");
+  const houseString = formData.get("house");
   const intent = formData.get("intent");
 
   if (
     !["save", "remove"].includes(intent?.toString() || "") ||
-    typeof houseIdString !== "string"
+    typeof houseString !== "string"
   ) {
     return data(
       { success: false, message: "Invalid request" },
@@ -36,24 +35,36 @@ export async function action({ request }: Route.ActionArgs) {
     );
   }
 
-  const houseId = parseInt(houseIdString, 10);
-  if (isNaN(houseId)) {
+  let house: House;
+  try {
+    house = JSON.parse(houseString);
+    if (typeof house?.id !== "number" || typeof house?.address !== "string") {
+      throw new Error("Invalid house data format");
+    }
+  } catch (error) {
     return data(
-      { success: false, message: "Invalid house ID" },
+      { success: false, message: "Invalid house data" },
       { status: 400 }
     );
   }
 
-  const savedIds = session.get("savedHouseIds") || [];
-  const idSet = new Set(savedIds);
+  const houseId = house.id;
 
-  if (idSet.has(houseId)) {
-    idSet.delete(houseId);
-  } else {
-    idSet.add(houseId);
+  const savedHouses: House[] = session.get("savedHouses") || [];
+
+  const existingIndex = savedHouses.findIndex((h) => h.id === houseId);
+
+  if (intent === "remove") {
+    if (existingIndex !== -1) {
+      savedHouses.splice(existingIndex, 1);
+    }
+  } else if (intent === "save") {
+    if (existingIndex === -1) {
+      savedHouses.push(house);
+    }
   }
 
-  session.set("savedHouseIds", Array.from(idSet));
+  session.set("savedHouses", savedHouses);
 
   return data(
     { success: true },
@@ -67,7 +78,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Home() {
   const fetcher = useFetcher<{ houses: House[]; page?: number }>();
-  const { savedHouseIds } = useLoaderData<typeof loader>();
+  const { savedHouses } = useLoaderData<typeof loader>();
   const [houses, setHouses] = useState<House[]>([]);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const lastProcessedPageRef = useRef<number>(0);
@@ -127,7 +138,7 @@ export default function Home() {
           >
             <HouseCard
               house={house}
-              isSaved={savedHouseIds.includes(house.id)}
+              isSaved={savedHouses.some((h) => h.id === house.id)}
             />
           </li>
         ))}
@@ -186,7 +197,7 @@ function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
       </div>
       <div className="flex justify-end p-4">
         <fetcher.Form method="post">
-          <input type="hidden" name="houseId" value={house.id.toString()} />
+          <input type="hidden" name="house" value={JSON.stringify(house)} />
           <input
             type="hidden"
             name="intent"
@@ -195,7 +206,12 @@ function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
 
           <button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer"
+            className={`font-medium py-2 px-4 rounded-md transition-colors cursor-pointer ${
+              isSaved
+                ? "bg-gray-500 hover:bg-gray-600 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
+            disabled={fetcher.state !== "idle"}
           >
             {getButtonText()}
           </button>

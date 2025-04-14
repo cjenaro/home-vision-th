@@ -1,7 +1,7 @@
 import { createCookieSessionStorage } from "react-router";
-
+import type { House } from "./routes/houses";
 type SessionData = {
-  savedHouseIds: number[];
+  savedHouses: House[];
 };
 
 type SessionFlashData = {
