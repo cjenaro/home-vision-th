@@ -4,6 +4,8 @@ import type { Route } from "./+types/home";
 import { useState, useEffect, useRef } from "react";
 import type { House } from "./houses";
 import { getSession, commitSession } from "~/session.server";
+import { HouseCardSkeleton } from "~/components/house-card-skeleton";
+import { HouseCard } from "~/components/house-card";
 
 function debounce(func: (...args: any[]) => void, wait: number) {
   let timeout: NodeJS.Timeout;
@@ -184,108 +186,6 @@ export default function Home() {
         )}
       </ul>
       <div ref={loadMoreRef} className="h-2" />
-    </div>
-  );
-}
-
-function SaveIcon({ isSaved }: { isSaved: boolean }) {
-  if (isSaved) {
-    return (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className="size-6 text-indigo-500"
-      >
-        <path
-          fillRule="evenodd"
-          d="M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 0 1-1.085.67L12 18.089l-7.165 3.583A.75.75 0 0 1 3.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93Z"
-          clipRule="evenodd"
-        />
-      </svg>
-    );
-  }
-
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth={1.5}
-      stroke="currentColor"
-      className="size-6 text-indigo-500"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-      />
-    </svg>
-  );
-}
-
-function HouseCard({ house, isSaved }: { house: House; isSaved: boolean }) {
-  const fetcher = useFetcher();
-  const intent = fetcher.formData?.get("intent");
-
-  const isSaving = intent === "save";
-
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-gray-700/20 relative">
-      <div className="relative pb-[56.25%]">
-        <img
-          src={house.photoURL}
-          alt={house.address}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      </div>
-      <div className="p-4">
-        <h3 className="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-          {house.price.toLocaleString("en-US", {
-            style: "currency",
-            currency: "USD",
-          })}
-        </h3>
-        <p className="text-gray-700 dark:text-gray-300 mb-2">{house.address}</p>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">
-          Homeowner: {house.homeowner}
-        </p>
-      </div>
-      <div className="flex justify-end p-4">
-        <fetcher.Form method="post">
-          <input type="hidden" name="house" value={JSON.stringify(house)} />
-          <input
-            type="hidden"
-            name="intent"
-            value={isSaved ? "remove" : "save"}
-          />
-
-          <button
-            type="submit"
-            className="bg-gray-100 dark:bg-gray-800 absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer"
-            disabled={fetcher.state !== "idle"}
-          >
-            {/* if no intent it means no submission, show isSaved from session, if intent then optimistically update */}
-            <SaveIcon isSaved={!intent ? isSaved : isSaving} />
-          </button>
-        </fetcher.Form>
-      </div>
-    </div>
-  );
-}
-
-function HouseCardSkeleton() {
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden animate-pulse h-full">
-      <div className="relative pb-[56.25%]">
-        <div className="absolute inset-0 w-full h-full bg-gray-200 dark:bg-gray-700" />
-      </div>
-      <div className="p-4">
-        <div className="w-24 h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
-        <div className="w-32 h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-        <div className="w-24 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-      </div>
     </div>
   );
 }
