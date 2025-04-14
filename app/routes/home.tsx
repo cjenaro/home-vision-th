@@ -5,6 +5,16 @@ import { useState, useEffect, useRef } from "react";
 import type { House } from "./houses";
 import { getSession, commitSession } from "~/session.server";
 
+function debounce(func: (...args: any[]) => void, wait: number) {
+  let timeout: NodeJS.Timeout;
+  return function (...args: any[]) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func(...args);
+    }, wait);
+  };
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const savedHouses = session.get("savedHouses") || [];
@@ -82,6 +92,7 @@ export default function Home() {
   const [houses, setHouses] = useState<House[]>([]);
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const lastProcessedPageRef = useRef<number>(0);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
@@ -106,7 +117,9 @@ export default function Home() {
       (entries) => {
         const entry = entries[0];
         if (entry.isIntersecting && fetcher.state === "idle") {
-          fetcher.load(`/houses?page=${(fetcher.data?.page || 0) + 1}`);
+          fetcher.load(
+            `/houses?page=${(fetcher.data?.page || 0) + 1}&per_page=${perPage}`
+          );
         }
       },
       { threshold: 0.0 }
@@ -124,9 +137,31 @@ export default function Home() {
     };
   }, [loadMoreRef, fetcher.state]);
 
+  function handlePerPageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const newPerPage = parseInt(event.target.value, 10);
+    if (isNaN(newPerPage) || newPerPage <= 0) return;
+
+    setPerPage(newPerPage);
+
+    setHouses([]);
+    lastProcessedPageRef.current = 0;
+    fetcher.load(`/houses?page=${1}&per_page=${newPerPage}`);
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Available Houses</h1>
+      <div className="flex justify-center mb-8 items-center gap-2 border border-gray-300 rounded-md p-2 w-fit mx-auto">
+        <label htmlFor="perPage">Per Page:</label>
+        <input
+          id="perPage"
+          className="w-24 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="number"
+          name="per_page"
+          defaultValue={10}
+          onChange={debounce(handlePerPageChange, 1000)}
+        />
+      </div>
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {houses.map((house, index) => (
           <li
