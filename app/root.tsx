@@ -51,8 +51,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
+  let isRouteError = false;
 
   if (isRouteErrorResponse(error)) {
+    isRouteError = true;
     message = error.status === 404 ? "404" : "Error";
     details =
       error.status === 404
@@ -64,12 +66,20 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+      <h1 className="text-9xl font-bold text-gray-800 mb-4">{message}</h1>
+      <p className="text-xl mb-8 max-w-md">{details}</p>
+      {isRouteError && (
+        <a
+          href="/"
+          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors mb-8"
+        >
+          Back to Homepage
+        </a>
+      )}
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
-          <code>{stack}</code>
+        <pre className="w-full max-w-2xl p-4 overflow-x-auto bg-gray-100 rounded text-left">
+          <code className="text-sm">{stack}</code>
         </pre>
       )}
     </main>
