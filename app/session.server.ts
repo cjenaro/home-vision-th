@@ -22,7 +22,7 @@ const { getSession, commitSession, destroySession } =
       maxAge: 60 * 60 * 24 * 30, // 30 days
       path: "/",
       sameSite: "lax",
-      secrets: COOKIE_SECRET,
+      secrets: COOKIE_SECRET.split(","),
       secure: process.env.NODE_ENV === "production",
     },
   });

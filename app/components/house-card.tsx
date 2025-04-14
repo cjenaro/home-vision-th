@@ -15,7 +15,7 @@ export function HouseCard({
   const isSaving = intent === "save";
 
   return (
-    <div className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] rounded-lg overflow-hidden hover:scale-101 transition-transform duration-100 ease-in-out shadow-sm dark:shadow-none relative dark:border dark:border-[hsl(var(--dark-foreground))]/30">
+    <div className="card hover:scale-101 transition-transform duration-100 ease-in-out">
       <img
         src={house.photoURL}
         alt={house.address}

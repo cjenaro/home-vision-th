@@ -63,12 +63,12 @@ export default function Saved() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8 dark:text-white">
+      <h1 className="text-3xl font-bold text-center mb-8 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
         Saved Houses
       </h1>
-      <div className="overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <div className="overflow-x-auto shadow-md sm:rounded-lg border border-[hsl(var(--border))] dark:border-[hsl(var(--dark-border))]">
+        <table className="w-full text-sm text-left text-[hsl(var(--muted-foreground))] dark:text-[hsl(var(--dark-muted-foreground))]">
+          <thead className="text-xs text-[hsl(var(--muted-foreground))] dark:text-[hsl(var(--dark-muted-foreground))] uppercase bg-[hsl(var(--muted))] dark:bg-[hsl(var(--dark-muted))]">
             <tr>
               <th scope="col" className="px-6 py-3">
                 Photo
@@ -86,10 +86,10 @@ export default function Saved() {
             </tr>
           </thead>
           <tbody>
-            {savedHouses.map((house, index) => (
+            {savedHouses.map((house) => (
               <tr
                 key={house.id}
-                className={`border-b dark:border-gray-700  even:bg-white dark:even:bg-gray-900 odd:bg-gray-50 dark:odd:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700`}
+                className="border-b border-[hsl(var(--border))] dark:border-[hsl(var(--dark-border))] bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] hover:bg-[hsl(var(--accent))] dark:hover:bg-[hsl(var(--dark-accent))] even:bg-[hsl(var(--muted))] dark:even:bg-[hsl(var(--dark-muted))]"
               >
                 <td className="px-6 py-4">
                   <img
@@ -98,9 +98,9 @@ export default function Saved() {
                     className="h-16 w-16 object-cover rounded"
                   />
                 </td>
-                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <td className="px-6 py-4 font-medium text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] whitespace-nowrap">
                   <Link
-                    className="flex items-center gap-2 hover:underline text-indigo-500 dark:text-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-200"
+                    className="flex items-center gap-2 hover:underline text-[hsl(var(--primary))] dark:text-[hsl(var(--dark-primary))] hover:text-[hsl(var(--primary))]/90 dark:hover:text-[hsl(var(--dark-primary))]/90"
                     target="_blank"
                     to={`https://www.google.com/maps/search/?api=1&query=${house.address}`}
                   >
@@ -126,13 +126,15 @@ export default function Saved() {
                     {house.address}
                   </Link>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
                   {house.price.toLocaleString("en-US", {
                     style: "currency",
                     currency: "USD",
                   })}
                 </td>
-                <td className="px-6 py-4">{house.homeowner}</td>
+                <td className="px-6 py-4 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
+                  {house.homeowner}
+                </td>
                 <td className="px-6 py-4">
                   <fetcher.Form method="post">
                     <input

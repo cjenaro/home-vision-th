@@ -1,6 +1,6 @@
 export function HouseCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden animate-pulse h-full">
+    <div className="card animate-pulse h-full">
       <div className="relative pb-[56.25%]">
         <div className="absolute inset-0 w-full h-full bg-gray-200 dark:bg-gray-700" />
       </div>
