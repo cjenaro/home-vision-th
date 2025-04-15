@@ -1,12 +1,11 @@
-import { data, Link, useFetcher, useLoaderData } from "react-router";
+import { data, useFetcher, useLoaderData } from "react-router";
 import type { Route } from "./+types/saved";
-import { commitSession, getSession } from "../session.server";
+import { getSavedHouses, removeHouse } from "~/utils/indexed-db";
 import type { House } from "./houses";
 import HouseMap from "~/components/map";
 import { useState } from "react";
 
-export async function action({ request }: Route.ActionArgs) {
-	const session = await getSession(request.headers.get("Cookie"));
+export async function clientAction({ request }: Route.ActionArgs) {
 	const formData = await request.formData();
 	const houseIdString = formData.get("houseId");
 	const intent = formData.get("intent");
@@ -26,29 +25,14 @@ export async function action({ request }: Route.ActionArgs) {
 		);
 	}
 
-	const savedHouses: House[] = session.get("savedHouses") || [];
-	const existingIndex = savedHouses.findIndex((h) => h.id === houseId);
+	await removeHouse(houseId);
 
-	if (existingIndex !== -1) {
-		savedHouses.splice(existingIndex, 1);
-	}
-
-	session.set("savedHouses", savedHouses);
-
-	return data(
-		{ success: true },
-		{
-			headers: {
-				"Set-Cookie": await commitSession(session),
-			},
-		},
-	);
+	return data({ success: true });
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-	const session = await getSession(request.headers.get("Cookie"));
-	const savedHouses = session.get("savedHouses") || [];
-	return data({ savedHouses });
+export async function clientLoader() {
+	const savedHouses = await getSavedHouses();
+	return { savedHouses };
 }
 
 function RemoveHouseButton({ houseId }: { houseId: number }) {
@@ -106,7 +90,7 @@ function RemoveHouseButton({ houseId }: { houseId: number }) {
 }
 
 export default function Saved() {
-	const { savedHouses } = useLoaderData<typeof loader>();
+	const { savedHouses } = useLoaderData<typeof clientLoader>();
 	const [selectedHouse, setSelectedHouse] = useState<House | null>(null);
 
 	return (

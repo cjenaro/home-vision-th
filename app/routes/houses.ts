@@ -38,7 +38,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 				}
 
 				// reached end of houses
-				if (!house_data.houses) {
+				if (!house_data.houses || house_data.houses.length === 0) {
 					console.log("Reached end of houses");
 					return data({ end: true, houses: [], page });
 				}

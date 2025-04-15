@@ -12,8 +12,8 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { getSession } from "./session.server";
 import { SavedHousesLink } from "./components/saved-houses-link";
+import { getSavedHousesCount } from "./utils/indexed-db";
 
 export const links: Route.LinksFunction = () => [
 	{ rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -37,14 +37,13 @@ export function meta() {
 	];
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-	const session = await getSession(request.headers.get("Cookie"));
-	const savedHouses = session.get("savedHouses") || [];
-	return data({ savedHousesCount: savedHouses.length });
+export async function clientLoader() {
+	const savedHousesCount = await getSavedHousesCount();
+	return data({ savedHousesCount });
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const loaderData = useLoaderData<typeof loader>();
+	const loaderData = useLoaderData<typeof clientLoader>();
 
 	return (
 		<html lang="en" className="dark:bg-gray-900 dark:text-white">
@@ -64,7 +63,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 								className="h-10 invert-100 grayscale-100"
 							/>
 						</Link>
-						<SavedHousesLink savedHousesCount={loaderData.savedHousesCount} />
+						<SavedHousesLink
+							savedHousesCount={loaderData?.savedHousesCount ?? 0}
+						/>
 					</div>
 				</header>
 				{children}

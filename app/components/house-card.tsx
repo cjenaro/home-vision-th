@@ -1,7 +1,7 @@
 import { useFetcher, useRouteLoaderData } from "react-router";
 import type { House } from "~/routes/houses";
 import { SaveIcon } from "./save-icon";
-import type { loader } from "~/root";
+import type { clientLoader } from "~/root";
 
 export function HouseCard({
 	house,
@@ -11,7 +11,7 @@ export function HouseCard({
 	isSaved: boolean;
 }) {
 	const fetcher = useFetcher({ key: `save-house-${house.id}` });
-	const rootLoaderData = useRouteLoaderData<typeof loader>("root");
+	const rootLoaderData = useRouteLoaderData<typeof clientLoader>("root");
 	const intent = fetcher.formData?.get("intent");
 
 	const isSaving = intent === "save";
@@ -43,15 +43,18 @@ export function HouseCard({
 					<input type="hidden" name="house" value={JSON.stringify(house)} />
 					<input
 						type="hidden"
-						name="savedHousesCount"
-						value={(rootLoaderData?.savedHousesCount ?? 0) + (isSaved ? -1 : 1)}
-					/>
-					<input
-						type="hidden"
 						name="intent"
 						value={isSaved ? "remove" : "save"}
 					/>
-
+					{rootLoaderData && (
+						<input
+							type="hidden"
+							name="optimisticCount"
+							value={
+								Number(rootLoaderData.savedHousesCount) + (isSaved ? -1 : 1)
+							}
+						/>
+					)}
 					<button
 						type="submit"
 						className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer border-b border-l border-r border-gray-200 dark:border-gray-700"

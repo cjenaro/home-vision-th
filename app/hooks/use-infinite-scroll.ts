@@ -1,62 +1,42 @@
 import { useRef, useState, useEffect } from "react";
-import type { useFetcher } from "react-router";
+import { useFetcher } from "react-router";
+import type { House, loader } from "~/routes/houses";
 
-interface FetcherData {
-	page?: number;
-	end?: boolean;
-}
-
-interface UseInfiniteScrollOptions<T extends FetcherData> {
-	initialPage?: number;
-	perPage?: number;
-	fetcher: ReturnType<typeof useFetcher<T>>;
-	onLoadMore: (page: number, perPage: number) => string;
-}
-
-export function useInfiniteScroll<T extends FetcherData>({
-	initialPage = 0,
+export function useInfiniteScroll({
 	perPage = 10,
-	fetcher,
-	onLoadMore,
-}: UseInfiniteScrollOptions<T>) {
-	const [reachedEnd, setReachedEnd] = useState(false);
+}: {
+	perPage?: number;
+}) {
 	const loadMoreRef = useRef<HTMLDivElement>(null);
-	const lastProcessedPageRef = useRef<number>(initialPage);
+	const fetcher = useFetcher<typeof loader>();
+	const reachedEnd = fetcher.data?.end;
+	const page = fetcher.data?.page || 0;
+	const [houses, setHouses] = useState<House[]>([]);
+	const newHouseData = fetcher.data?.houses;
+	const lastProcessedPageRef = useRef<number>(0);
 
 	useEffect(() => {
-		if (fetcher.state === "idle" && fetcher.data) {
-			const data = fetcher.data as T;
-			const currentPage = data?.page;
-			const isEnd = data?.end;
+		if (!newHouseData?.length || fetcher.state !== "idle") return;
 
-			if (isEnd) {
-				setReachedEnd(true);
-			}
-
-			if (
-				currentPage !== undefined &&
-				currentPage !== lastProcessedPageRef.current
-			) {
-				lastProcessedPageRef.current = currentPage;
-			}
+		if (page > lastProcessedPageRef.current) {
+			setHouses((prev) => [...prev, ...newHouseData]);
+			lastProcessedPageRef.current = page;
 		}
-	}, [fetcher.state, fetcher.data]);
+	}, [newHouseData, fetcher.state, page]);
 
 	useEffect(() => {
-		if (reachedEnd) return;
-
 		const observer = new IntersectionObserver(
 			(entries) => {
-				const entry = entries[0];
-				if (entry.isIntersecting && fetcher.state === "idle" && !reachedEnd) {
-					const data = fetcher.data as T;
-					fetcher.load(onLoadMore(data?.page || 0, perPage));
+				const first = entries[0];
+				if (first.isIntersecting && !reachedEnd && fetcher.state === "idle") {
+					fetcher.load(`/houses?page=${page + 1}&per_page=${perPage}`);
 				}
 			},
-			{ threshold: 0.0, rootMargin: "0px 0px 500px 0px" },
+			{ threshold: 0.1 },
 		);
 
 		const currentRef = loadMoreRef.current;
+
 		if (currentRef) {
 			observer.observe(currentRef);
 		}
@@ -66,21 +46,7 @@ export function useInfiniteScroll<T extends FetcherData>({
 				observer.unobserve(currentRef);
 			}
 		};
-	}, [
-		perPage,
-		fetcher.state,
-		fetcher.load,
-		fetcher.data,
-		reachedEnd,
-		onLoadMore,
-	]);
+	}, [reachedEnd, fetcher.state, fetcher.load, page, perPage]);
 
-	return {
-		loadMoreRef,
-		reachedEnd,
-		reset: () => {
-			setReachedEnd(false);
-			lastProcessedPageRef.current = initialPage;
-		},
-	};
+	return { loadMoreRef, fetcher, houses, setHouses };
 }

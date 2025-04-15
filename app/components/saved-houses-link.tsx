@@ -11,6 +11,10 @@ export function SavedHousesLink({
 		(f) => f.key.includes("save-house") && f.state !== "idle",
 	);
 
+	const optimisticSavedHousesCount = fetcher?.formData?.get("optimisticCount")
+		? Number(fetcher.formData.get("optimisticCount"))
+		: savedHousesCount;
+
 	return (
 		<Link to="/saved" className="relative hover:bg-white/10 rounded-full p-4">
 			<svg
@@ -28,13 +32,9 @@ export function SavedHousesLink({
 					d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
 				/>
 			</svg>
-			{savedHousesCount > 0 && (
-				<span
-					className={`absolute top-2 right-2 bg-blue-600 text-white rounded-full size-4 text-xs text-center flex items-center justify-center ${
-						fetcher ? "animate-pulse" : ""
-					}`}
-				>
-					{fetcher ? "" : savedHousesCount}
+			{optimisticSavedHousesCount > 0 && (
+				<span className="absolute top-2 right-2 bg-blue-600 text-white rounded-full size-4 text-xs text-center flex items-center justify-center">
+					{optimisticSavedHousesCount}
 				</span>
 			)}
 		</Link>

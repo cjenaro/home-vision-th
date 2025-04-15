@@ -1,9 +1,8 @@
-import { useLoaderData } from "react-router";
 import { data, useFetcher } from "react-router";
 import type { Route } from "./+types/home";
 import { useState, useEffect } from "react";
 import type { loader as housesLoader, House } from "./houses";
-import { getSession, commitSession } from "~/session.server";
+import { getSavedHouses, saveHouse, removeHouse } from "~/utils/indexed-db";
 import { HouseCardSkeleton } from "~/components/house-card-skeleton";
 import { HouseCard } from "~/components/house-card";
 import { Link } from "react-router";
@@ -20,22 +19,12 @@ function debounce<T>(func: (...args: T[]) => void, wait: number) {
 	};
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-	const session = await getSession(request.headers.get("Cookie"));
-	const savedHouses = session.get("savedHouses") || [];
-
-	const uniqueHousesMap = new Map<number, House>();
-	for (const house of savedHouses) {
-		if (house && typeof house.id === "number") {
-			uniqueHousesMap.set(house.id, house);
-		}
-	}
-
-	return data({ savedHouses: Array.from(uniqueHousesMap.values()) });
+export async function clientLoader() {
+	const savedHouses = await getSavedHouses();
+	return { savedHouses };
 }
 
-export async function action({ request }: Route.ActionArgs) {
-	const session = await getSession(request.headers.get("Cookie"));
+export async function clientAction({ request }: Route.ActionArgs) {
 	const formData = await request.formData();
 	const houseString = formData.get("house");
 	const intent = formData.get("intent");
@@ -63,71 +52,39 @@ export async function action({ request }: Route.ActionArgs) {
 		);
 	}
 
-	const houseId = house.id;
-
-	const savedHouses: House[] = session.get("savedHouses") || [];
-
-	const existingIndex = savedHouses.findIndex((h) => h.id === houseId);
-
 	if (intent === "remove") {
-		if (existingIndex !== -1) {
-			savedHouses.splice(existingIndex, 1);
-		}
+		await removeHouse(house.id);
 	} else if (intent === "save") {
-		if (existingIndex === -1) {
-			savedHouses.push(house);
-		}
+		await saveHouse(house);
 	}
 
-	session.set("savedHouses", savedHouses);
-
-	return data(
-		{ success: true },
-		{
-			headers: {
-				"Set-Cookie": await commitSession(session),
-			},
-		},
-	);
+	return data({ success: true });
 }
 
-export default function Home() {
-	const fetcher = useFetcher<typeof housesLoader>();
-	const { savedHouses } = useLoaderData<typeof loader>();
-	const [houses, setHouses] = useState<House[]>([]);
-	const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
+export default function Home({ loaderData }: Route.ComponentProps) {
+	const { savedHouses } = loaderData;
 	const [perPage, setPerPage] = useState(10);
 
-	const { loadMoreRef, reachedEnd, reset } = useInfiniteScroll({
-		fetcher,
+	const { fetcher, houses, loadMoreRef, setHouses } = useInfiniteScroll({
 		perPage,
-		onLoadMore: (page, perPage) =>
-			`/houses?page=${page + 1}&per_page=${perPage}`,
 	});
-
-	useEffect(() => {
-		if (fetcher.state === "idle" && fetcher.data) {
-			const newHouses = fetcher.data.houses;
-			if (newHouses && newHouses.length > 0) {
-				setHouses((prevHouses) => [...prevHouses, ...newHouses]);
-			}
-		}
-	}, [fetcher.state, fetcher.data]);
+	const minAvailablePrice =
+		houses.length > 0 ? Math.min(...houses.map((h) => h.price || 0)) : 0;
+	const maxAvailablePrice =
+		houses.length > 0 ? Math.max(...houses.map((h) => h.price || 0)) : 1000000;
+	const [priceRange, setPriceRange] = useState<[number, number]>([
+		minAvailablePrice,
+		maxAvailablePrice,
+	]);
 
 	function handlePerPageChange(event: React.ChangeEvent<HTMLInputElement>) {
 		const newPerPage = Number.parseInt(event.target.value, 10);
 		if (Number.isNaN(newPerPage) || newPerPage <= 0) return;
 
-		setPerPage(newPerPage);
-		reset();
 		setHouses([]);
+		setPerPage(newPerPage);
 		fetcher.load(`/houses?page=${1}&per_page=${newPerPage}`);
 	}
-
-	const minAvailablePrice =
-		houses.length > 0 ? Math.min(...houses.map((h) => h.price || 0)) : 0;
-	const maxAvailablePrice =
-		houses.length > 0 ? Math.max(...houses.map((h) => h.price || 0)) : 1000000;
 
 	return (
 		<div className="container mx-auto px-4 py-8">
