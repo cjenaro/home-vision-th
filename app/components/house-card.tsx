@@ -1,6 +1,7 @@
-import { useFetcher } from "react-router";
+import { useFetcher, useRouteLoaderData } from "react-router";
 import type { House } from "~/routes/houses";
 import { SaveIcon } from "./save-icon";
+import type { loader } from "~/root";
 
 export function HouseCard({
 	house,
@@ -9,7 +10,8 @@ export function HouseCard({
 	house: House;
 	isSaved: boolean;
 }) {
-	const fetcher = useFetcher();
+	const fetcher = useFetcher({ key: `save-house-${house.id}` });
+	const rootLoaderData = useRouteLoaderData<typeof loader>("root");
 	const intent = fetcher.formData?.get("intent");
 
 	const isSaving = intent === "save";
@@ -39,6 +41,11 @@ export function HouseCard({
 			<div className="flex justify-end p-4">
 				<fetcher.Form method="post">
 					<input type="hidden" name="house" value={JSON.stringify(house)} />
+					<input
+						type="hidden"
+						name="savedHousesCount"
+						value={(rootLoaderData?.savedHousesCount ?? 0) + (isSaved ? -1 : 1)}
+					/>
 					<input
 						type="hidden"
 						name="intent"
