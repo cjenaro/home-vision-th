@@ -1,4 +1,4 @@
-# HomeVision Takehomez
+# HomeVision Takehome
 
 https://github.com/user-attachments/assets/db4cb6ee-a604-4916-9dc1-db2b04064849
 
@@ -61,9 +61,9 @@ Your application will be available at `http://localhost:5173`.
 ### Linting and Formatting
 
 ```bash
-     npm run lint        # Run Biome linter
-     npm run lint:fix    # Fix linting issues
-     npm run format      # Format code
+npm run lint        # Run Biome linter
+npm run lint:fix    # Fix linting issues
+npm run format      # Format code
 ```
 
 ## Building for Production
