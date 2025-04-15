@@ -1,9 +1,5 @@
 # HomeVision Takehome
 
-| House Listing | Saved Houses |
-| --- | --- |
-![Screen Shot 2025-04-14 at 16 30 33](https://github.com/user-attachments/assets/03ffbf9b-8c11-4be1-9d57-feca19d63cb0) | ![Screen Shot 2025-04-14 at 16 30 44](https://github.com/user-attachments/assets/e7d6f8f5-f30e-4642-8ffe-a5a2be9ae28d) | ![Screen Shot 2025-04-14 at 16 30 44](https://github.com/user-attachments/assets/e7d6f8f5-f30e-4642-8ffe-a5a2be9ae28d) |
-
 ## Stack
 
 - 🔒 TypeScript
@@ -11,16 +7,17 @@
 - 📖 [React Router v7](https://reactrouter.com/)
 - 📖 [Biome](https://biomejs.dev/) for linting and formatting
 - 📖 [Kamal](https://kamal-deploy.org/) for deployment
+- [MapLibre](https://visgl.github.io/react-map-gl) and [OpenFreeMap](https://openfreemap.org)
 
 ## Features
 
 - Infinite loading of house listings
-- Save houses to your own custom list on the cookie session
+- Save houses to your own custom list using indexedDB
+- Look at the saved houses on a map
 - per page pagination
 - Dark and light mode support
 - server side rendering and client side fetching of data.
 - retry logic for failed requests using [exponential backoff](https://medium.com/bobble-engineering/how-does-exponential-backoff-work-90ef02401c65)
-- link to google maps with search API
 
 ## Getting Started
 

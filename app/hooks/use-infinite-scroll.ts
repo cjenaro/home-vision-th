@@ -31,6 +31,7 @@ export function useInfiniteScroll({
 			setIsLoading(false);
 		}
 
+		// if the per page filter changed fetch and reset the houses
 		if (perPage !== lastPerPageRef.current) {
 			page.current = 0;
 			lastPerPageRef.current = perPage;
@@ -40,6 +41,7 @@ export function useInfiniteScroll({
 		const observer = new IntersectionObserver(
 			async (entries) => {
 				const first = entries[0];
+				// don't call if we are loading or finished
 				if (first.isIntersecting && !endReason && !isLoading) {
 					setIsLoading(true);
 
