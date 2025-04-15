@@ -1,7 +1,7 @@
 # HomeVision Takehome
 
-| House Listing | Saved Houses |
-|------------|-----------|
+| House Listing                                                                                                          | Saved Houses                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | ![Screen Shot 2025-04-14 at 16 30 33](https://github.com/user-attachments/assets/03ffbf9b-8c11-4be1-9d57-feca19d63cb0) | ![Screen Shot 2025-04-14 at 16 30 44](https://github.com/user-attachments/assets/e7d6f8f5-f30e-4642-8ffe-a5a2be9ae28d) | ![Screen Shot 2025-04-14 at 16 30 44](https://github.com/user-attachments/assets/e7d6f8f5-f30e-4642-8ffe-a5a2be9ae28d) |
 
 ## Stack
@@ -35,7 +35,14 @@ npm install
 ### Development
 
 Environment variables needed for development:
+
 - `COOKIE_SECRET` - the secret for the cookie session, can be added to the `.env` file and can be any random string
+
+From the root of the project
+
+```bash
+echo 'COOKIE_SECRET="s3cr3t"' >> .env
+```
 
 Start the development server with HMR:
 
@@ -59,7 +66,7 @@ The application is deployed to [Kamal](https://kamal-deploy.org/) to a VPS on He
 
 ```bash
 kamal deploy
-``` 
+```
 
 To deploy the app there are two kamal secrets that need to be set:
 
