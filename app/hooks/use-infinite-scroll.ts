@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { useFetcher } from "react-router";
-import type { House, loader } from "~/routes/houses";
+import type { House } from "~/routes/houses";
+import type { EndReason } from "~/routes/houses";
 
 export function useInfiniteScroll({
 	perPage = 10,
@@ -8,28 +8,42 @@ export function useInfiniteScroll({
 	perPage?: number;
 }) {
 	const loadMoreRef = useRef<HTMLDivElement>(null);
-	const fetcher = useFetcher<typeof loader>();
-	const reachedEnd = fetcher.data?.end;
-	const page = fetcher.data?.page || 0;
 	const [houses, setHouses] = useState<House[]>([]);
-	const newHouseData = fetcher.data?.houses;
-	const lastProcessedPageRef = useRef<number>(0);
+	const [isLoading, setIsLoading] = useState(false);
+	const lastPerPageRef = useRef(perPage);
+	const [endReason, setEndReason] = useState<EndReason | null>(null);
+	const page = useRef(0);
 
 	useEffect(() => {
-		if (!newHouseData?.length || fetcher.state !== "idle") return;
+		async function fetchMoreHouses(replace = false) {
+			const res = await fetch(
+				`/houses?page=${page.current + 1}&per_page=${perPage}`,
+			);
+			const data = await res.json();
+			if (data.houses.length > 0) {
+				if (replace) setHouses(data.houses);
+				else setHouses((prev) => [...prev, ...data.houses]);
+			}
 
-		if (page > lastProcessedPageRef.current) {
-			setHouses((prev) => [...prev, ...newHouseData]);
-			lastProcessedPageRef.current = page;
+			if (data.page) page.current = data.page;
+			setEndReason(data.end ? data.endReason : null);
+
+			setIsLoading(false);
 		}
-	}, [newHouseData, fetcher.state, page]);
 
-	useEffect(() => {
+		if (perPage !== lastPerPageRef.current) {
+			page.current = 0;
+			lastPerPageRef.current = perPage;
+			fetchMoreHouses(true);
+		}
+
 		const observer = new IntersectionObserver(
-			(entries) => {
+			async (entries) => {
 				const first = entries[0];
-				if (first.isIntersecting && !reachedEnd && fetcher.state === "idle") {
-					fetcher.load(`/houses?page=${page + 1}&per_page=${perPage}`);
+				if (first.isIntersecting && !endReason && !isLoading) {
+					setIsLoading(true);
+
+					fetchMoreHouses();
 				}
 			},
 			{ threshold: 0.1 },
@@ -46,7 +60,14 @@ export function useInfiniteScroll({
 				observer.unobserve(currentRef);
 			}
 		};
-	}, [reachedEnd, fetcher.state, fetcher.load, page, perPage]);
+	}, [endReason, perPage, isLoading]);
 
-	return { loadMoreRef, fetcher, houses, setHouses };
+	function reset() {
+		setHouses([]);
+		page.current = 0;
+		lastPerPageRef.current = perPage;
+		setEndReason(null);
+	}
+
+	return { loadMoreRef, reset, houses, isLoading, endReason };
 }

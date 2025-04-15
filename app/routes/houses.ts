@@ -9,6 +9,12 @@ export type House = {
 	id: number;
 };
 
+export enum EndReason {
+	NO_MORE_HOUSES = "NO_MORE_HOUSES",
+	ERROR = "ERROR",
+	EMPTY_RESPONSE = "EMPTY_RESPONSE",
+}
+
 const MAX_RETRIES = 3;
 export async function loader({ request }: Route.LoaderArgs) {
 	const url = new URL(request.url);
@@ -40,7 +46,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 				// reached end of houses
 				if (!house_data.houses || house_data.houses.length === 0) {
 					console.log("Reached end of houses");
-					return data({ end: true, houses: [], page });
+					return data({
+						end: true,
+						houses: [],
+						page,
+						endReason: EndReason.NO_MORE_HOUSES,
+					});
 				}
 
 				return data({
@@ -64,6 +75,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 	}
 
 	console.error(`All attempts failed for page ${page}. Returning empty data.`);
-
-	return data({ houses: [], page, end: true });
+	return data({
+		houses: [],
+		page,
+		end: true,
+		endReason: EndReason.ERROR,
+	});
 }

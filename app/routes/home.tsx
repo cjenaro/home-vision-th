@@ -1,13 +1,13 @@
-import { data, useFetcher } from "react-router";
+import { data, Link } from "react-router";
 import type { Route } from "./+types/home";
-import { useState, useEffect } from "react";
-import type { loader as housesLoader, House } from "./houses";
+import { useState } from "react";
+import type { House } from "./houses";
 import { getSavedHouses, saveHouse, removeHouse } from "~/utils/indexed-db";
-import { HouseCardSkeleton } from "~/components/house-card-skeleton";
+import { EndCard } from "~/components/end-card";
 import { HouseCard } from "~/components/house-card";
-import { Link } from "react-router";
 import { PriceRange } from "~/components/price-range";
 import { useInfiniteScroll } from "~/hooks/use-infinite-scroll";
+import { HouseCardSkeleton } from "~/components/house-card-skeleton";
 
 function debounce<T>(func: (...args: T[]) => void, wait: number) {
 	let timeout: NodeJS.Timeout;
@@ -65,9 +65,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 	const { savedHouses } = loaderData;
 	const [perPage, setPerPage] = useState(10);
 
-	const { fetcher, houses, loadMoreRef, setHouses } = useInfiniteScroll({
-		perPage,
-	});
+	const { loadMoreRef, houses, isLoading, endReason, reset } =
+		useInfiniteScroll({
+			perPage,
+		});
 	const minAvailablePrice =
 		houses.length > 0 ? Math.min(...houses.map((h) => h.price || 0)) : 0;
 	const maxAvailablePrice =
@@ -81,9 +82,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 		const newPerPage = Number.parseInt(event.target.value, 10);
 		if (Number.isNaN(newPerPage) || newPerPage <= 0) return;
 
-		setHouses([]);
 		setPerPage(newPerPage);
-		fetcher.load(`/houses?page=${1}&per_page=${newPerPage}`);
 	}
 
 	return (
@@ -132,9 +131,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 							/>
 						</li>
 					))}
-				{fetcher.state === "loading" && (
+				{isLoading && (
 					<li>
 						<HouseCardSkeleton />
+					</li>
+				)}
+				{endReason && (
+					<li>
+						<EndCard onClick={reset} endReason={endReason} />
 					</li>
 				)}
 			</ul>
