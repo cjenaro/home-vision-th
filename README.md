@@ -1,4 +1,6 @@
-# HomeVision Takehome
+# HomeVision Takehomez
+
+https://github.com/user-attachments/assets/db4cb6ee-a604-4916-9dc1-db2b04064849
 
 ## Stack
 
