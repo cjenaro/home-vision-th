@@ -19,10 +19,6 @@ const MAX_RETRIES = 3;
 export async function loader({ request }: Route.LoaderArgs) {
 	const url = new URL(request.url);
 	const page = Number.parseInt(url.searchParams.get("page") || "1", 10);
-	const per_page = Number.parseInt(
-		url.searchParams.get("per_page") || "1000",
-		10,
-	);
 
 	let attempt = 0;
 
@@ -32,7 +28,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 				"https://staging.homevision.co/api_project/houses",
 			);
 			apiUrl.searchParams.set("page", page.toString());
-			apiUrl.searchParams.set("per_page", per_page.toString());
 
 			const response = await fetch(apiUrl.toString());
 

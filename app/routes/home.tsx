@@ -63,12 +63,9 @@ export async function clientAction({ request }: Route.ActionArgs) {
 
 export default function Home({ loaderData }: Route.ComponentProps) {
 	const { savedHouses } = loaderData;
-	const [perPage, setPerPage] = useState(10);
 
 	const { loadMoreRef, houses, isLoading, endReason, reset } =
-		useInfiniteScroll({
-			perPage,
-		});
+		useInfiniteScroll();
 	const minAvailablePrice =
 		houses.length > 0 ? Math.min(...houses.map((h) => h.price || 0)) : 0;
 	const maxAvailablePrice =
@@ -78,31 +75,12 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 		maxAvailablePrice,
 	]);
 
-	function handlePerPageChange(event: React.ChangeEvent<HTMLInputElement>) {
-		const newPerPage = Number.parseInt(event.target.value, 10);
-		if (Number.isNaN(newPerPage) || newPerPage <= 0) return;
-
-		setPerPage(newPerPage);
-	}
-
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<h1 className="text-3xl font-bold text-center mb-8 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
 				Available Houses
 			</h1>
 			<div className="flex flex-col md:flex-row justify-center mb-8 items-center gap-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 w-fit mx-auto text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
-				<div className="flex items-center gap-2">
-					<label htmlFor="perPage">Per Page:</label>
-					<input
-						id="perPage"
-						className="w-24 p-2 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] bg-transparent"
-						type="number"
-						name="per_page"
-						defaultValue={10}
-						onChange={debounce(handlePerPageChange, 1000)}
-					/>
-				</div>
-
 				<PriceRange
 					minAvailablePrice={minAvailablePrice}
 					maxAvailablePrice={maxAvailablePrice}
