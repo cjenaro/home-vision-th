@@ -36,16 +36,6 @@ npm install
 
 ### Development
 
-Environment variables needed for development:
-
-- `COOKIE_SECRET` - the secret for the cookie session, can be added to the `.env` file and can be any random string
-
-From the root of the project
-
-```bash
-echo 'COOKIE_SECRET="s3cr3t"' >> .env
-```
-
 Start the development server with HMR:
 
 ```bash
@@ -73,7 +63,6 @@ kamal deploy
 To deploy the app there are two kamal secrets that need to be set:
 
 - `KAMAL_REGISTRY_PASSWORD` - the password for the docker registry
-- `COOKIE_SECRET` - the secret for the cookie session
 
 These can be shared through a 1Password vault with the team,
 
