@@ -20,7 +20,6 @@ export function PriceRange({
 			<div className="flex items-center gap-1">
 				<span className="text-sm">Price:</span>
 				<span className="text-sm min-w-16">
-					$
 					{minPrice.toLocaleString("en-US", {
 						style: "currency",
 						currency: "USD",
@@ -28,7 +27,6 @@ export function PriceRange({
 				</span>
 				<span className="text-sm">-</span>
 				<span className="text-sm min-w-16">
-					$
 					{maxPrice.toLocaleString("en-US", {
 						style: "currency",
 						currency: "USD",
