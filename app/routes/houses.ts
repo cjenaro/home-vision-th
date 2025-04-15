@@ -33,13 +33,20 @@ export async function loader({ request }: Route.LoaderArgs) {
 			if (response.ok) {
 				const house_data = await response.json();
 
-				if (!house_data.houses) {
+				if (!house_data.ok) {
 					throw new Error("No houses found");
+				}
+
+				// reached end of houses
+				if (!house_data.houses) {
+					console.log("Reached end of houses");
+					return data({ end: true, houses: [], page });
 				}
 
 				return data({
 					houses: house_data.houses as House[],
 					page,
+					end: false,
 				});
 			}
 		} catch (error) {
@@ -58,5 +65,5 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 	console.error(`All attempts failed for page ${page}. Returning empty data.`);
 
-	return data({ houses: [], page });
+	return data({ houses: [], page, end: true });
 }

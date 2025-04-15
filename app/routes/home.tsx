@@ -1,12 +1,14 @@
 import { useLoaderData } from "react-router";
 import { data, useFetcher } from "react-router";
 import type { Route } from "./+types/home";
-import { useState, useEffect, useRef } from "react";
-import type { House } from "./houses";
+import { useState, useEffect } from "react";
+import type { loader as housesLoader, House } from "./houses";
 import { getSession, commitSession } from "~/session.server";
 import { HouseCardSkeleton } from "~/components/house-card-skeleton";
 import { HouseCard } from "~/components/house-card";
 import { Link } from "react-router";
+import { PriceRange } from "~/components/price-range";
+import { useInfiniteScroll } from "~/hooks/use-infinite-scroll";
 
 function debounce<T>(func: (...args: T[]) => void, wait: number) {
 	let timeout: NodeJS.Timeout;
@@ -90,98 +92,89 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
-	const fetcher = useFetcher<{ houses: House[]; page?: number }>();
+	const fetcher = useFetcher<typeof housesLoader>();
 	const { savedHouses } = useLoaderData<typeof loader>();
 	const [houses, setHouses] = useState<House[]>([]);
-	const loadMoreRef = useRef<HTMLDivElement>(null);
-	const lastProcessedPageRef = useRef<number>(0);
+	const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
 	const [perPage, setPerPage] = useState(10);
+
+	const { loadMoreRef, reachedEnd, reset } = useInfiniteScroll({
+		fetcher,
+		perPage,
+		onLoadMore: (page, perPage) =>
+			`/houses?page=${page + 1}&per_page=${perPage}`,
+	});
 
 	useEffect(() => {
 		if (fetcher.state === "idle" && fetcher.data) {
 			const newHouses = fetcher.data.houses;
-			const currentPage = fetcher.data.page;
-
-			// only update the houses if the page has changed.
-			if (
-				currentPage !== undefined &&
-				currentPage !== lastProcessedPageRef.current
-			) {
-				if (newHouses && newHouses.length > 0) {
-					setHouses((prevHouses) => [...prevHouses, ...newHouses]);
-				}
-				lastProcessedPageRef.current = currentPage;
+			if (newHouses && newHouses.length > 0) {
+				setHouses((prevHouses) => [...prevHouses, ...newHouses]);
 			}
 		}
 	}, [fetcher.state, fetcher.data]);
-
-	useEffect(() => {
-		const observer = new IntersectionObserver(
-			(entries) => {
-				const entry = entries[0];
-				if (entry.isIntersecting && fetcher.state === "idle") {
-					fetcher.load(
-						`/houses?page=${(fetcher.data?.page || 0) + 1}&per_page=${perPage}`,
-					);
-				}
-			},
-			{ threshold: 0.0, rootMargin: "0px 0px 500px 0px" },
-		);
-
-		const currentRef = loadMoreRef.current;
-		if (currentRef) {
-			observer.observe(currentRef);
-		}
-
-		return () => {
-			if (currentRef) {
-				observer.unobserve(currentRef);
-			}
-		};
-	}, [perPage, fetcher.state, fetcher.load, fetcher.data?.page]);
 
 	function handlePerPageChange(event: React.ChangeEvent<HTMLInputElement>) {
 		const newPerPage = Number.parseInt(event.target.value, 10);
 		if (Number.isNaN(newPerPage) || newPerPage <= 0) return;
 
 		setPerPage(newPerPage);
-
+		reset();
 		setHouses([]);
-		lastProcessedPageRef.current = 0;
 		fetcher.load(`/houses?page=${1}&per_page=${newPerPage}`);
 	}
+
+	const minAvailablePrice =
+		houses.length > 0 ? Math.min(...houses.map((h) => h.price || 0)) : 0;
+	const maxAvailablePrice =
+		houses.length > 0 ? Math.max(...houses.map((h) => h.price || 0)) : 1000000;
 
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<h1 className="text-3xl font-bold text-center mb-8 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
 				Available Houses
 			</h1>
-			<div className="flex justify-center mb-8 items-center gap-2 border border-gray-300 dark:border-gray-700 rounded-md p-2 w-fit mx-auto text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
-				<label htmlFor="perPage">Per Page:</label>
-				<input
-					id="perPage"
-					className="w-24 p-2 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] bg-transparent"
-					type="number"
-					name="per_page"
-					defaultValue={10}
-					onChange={debounce(handlePerPageChange, 1000)}
+			<div className="flex flex-col md:flex-row justify-center mb-8 items-center gap-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 w-fit mx-auto text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
+				<div className="flex items-center gap-2">
+					<label htmlFor="perPage">Per Page:</label>
+					<input
+						id="perPage"
+						className="w-24 p-2 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] bg-transparent"
+						type="number"
+						name="per_page"
+						defaultValue={10}
+						onChange={debounce(handlePerPageChange, 1000)}
+					/>
+				</div>
+
+				<PriceRange
+					minAvailablePrice={minAvailablePrice}
+					maxAvailablePrice={maxAvailablePrice}
+					priceRange={priceRange}
+					setPriceRange={setPriceRange}
 				/>
 			</div>
+
 			<ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{houses.map((house, index) => (
-					<li
-						key={house.id}
-						className="opacity-0 animate-fade-in"
-						style={{
-							animationDelay: `${(index % 10) * 100}ms`,
-						}}
-					>
-						<HouseCard
-							house={house}
-							isSaved={savedHouses.some((h) => h.id === house.id)}
-						/>
-					</li>
-				))}
+				{houses
+					.filter(
+						(house) =>
+							house.price >= priceRange[0] && house.price <= priceRange[1],
+					)
+					.map((house, index) => (
+						<li
+							key={house.id}
+							className="opacity-0 animate-fade-in"
+							style={{
+								animationDelay: `${(index % 10) * 100}ms`,
+							}}
+						>
+							<HouseCard
+								house={house}
+								isSaved={savedHouses.some((h) => h.id === house.id)}
+							/>
+						</li>
+					))}
 				{fetcher.state === "loading" && (
 					<li>
 						<HouseCardSkeleton />

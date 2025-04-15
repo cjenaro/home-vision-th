@@ -6,6 +6,7 @@ export function SavedHousesLink({
 	savedHousesCount: number;
 }) {
 	const fetchers = useFetchers();
+	// this means there's a fetcher submitting to save or remove a house
 	const fetcher = fetchers.find(
 		(f) => f.key.includes("save-house") && f.state !== "idle",
 	);
