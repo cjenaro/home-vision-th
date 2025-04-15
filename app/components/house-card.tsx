@@ -17,7 +17,7 @@ export function HouseCard({
 	const isSaving = intent === "save";
 
 	return (
-		<div className="card hover:scale-101 transition-transform duration-100 ease-in-out">
+		<div className="card hover:scale-101 transition-transform duration-100 ease-in-out h-full">
 			<img
 				src={house.photoURL}
 				alt={house.address}
@@ -38,7 +38,7 @@ export function HouseCard({
 					Homeowner: {house.homeowner}
 				</p>
 			</div>
-			<div className="flex justify-end p-4">
+			<div>
 				<fetcher.Form method="post">
 					<input type="hidden" name="house" value={JSON.stringify(house)} />
 					<input

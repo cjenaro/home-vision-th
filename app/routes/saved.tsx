@@ -1,8 +1,9 @@
-import { Link, useFetcher, useLoaderData } from "react-router";
+import { data, Link, useFetcher, useLoaderData } from "react-router";
 import type { Route } from "./+types/saved";
-import { data } from "react-router";
 import { commitSession, getSession } from "../session.server";
 import type { House } from "./houses";
+import HouseMap from "~/components/map";
+import { useState } from "react";
 
 export async function action({ request }: Route.ActionArgs) {
 	const session = await getSession(request.headers.get("Cookie"));
@@ -106,6 +107,7 @@ function RemoveHouseButton({ houseId }: { houseId: number }) {
 
 export default function Saved() {
 	const { savedHouses } = useLoaderData<typeof loader>();
+	const [selectedHouse, setSelectedHouse] = useState<House | null>(null);
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -141,14 +143,14 @@ export default function Saved() {
 									<img
 										src={house.photoURL}
 										alt={house.address}
-										className="h-16 w-16 object-cover rounded"
+										className="aspect-video w-20 object-cover rounded"
 									/>
 								</td>
 								<td className="px-6 py-4 font-medium text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] whitespace-nowrap">
-									<Link
+									<button
+										type="button"
 										className="flex items-center gap-2 hover:underline text-[hsl(var(--primary))] dark:text-[hsl(var(--dark-primary))] hover:text-[hsl(var(--primary))]/90 dark:hover:text-[hsl(var(--dark-primary))]/90"
-										target="_blank"
-										to={`https://www.google.com/maps/search/?api=1&query=${house.address}`}
+										onClick={() => setSelectedHouse(house)}
 									>
 										<svg
 											xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +173,7 @@ export default function Saved() {
 											/>
 										</svg>
 										{house.address}
-									</Link>
+									</button>
 								</td>
 								<td className="px-6 py-4 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
 									{house.price.toLocaleString("en-US", {
@@ -189,6 +191,10 @@ export default function Saved() {
 						))}
 					</tbody>
 				</table>
+			</div>
+
+			<div className="mt-8 w-full">
+				<HouseMap houses={savedHouses} selectedHouse={selectedHouse} />
 			</div>
 		</div>
 	);
