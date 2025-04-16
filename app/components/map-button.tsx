@@ -1,4 +1,5 @@
 import MaplibreMap, { Marker } from "react-map-gl/maplibre";
+import type { MapRef } from "react-map-gl/maplibre";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useRef, useState } from "react";
 import { useEffect } from "react";
@@ -16,6 +17,7 @@ function MapPopup({
   address: string;
 }) {
   const [[lat, lon], setLatLon] = useState<[number, number]>([40, -100]);
+  const mRef = useRef<MapRef>(null);
   const scope = useRef(null);
 
   useEffect(() => {
@@ -27,6 +29,9 @@ function MapPopup({
       const data = await response.json();
       const [place] = data.places;
       setLatLon([place.latitude, place.longitude]);
+      if (mRef.current) {
+        mRef.current.setCenter([place.longitude, place.latitude]);
+      }
     }
     fetchPlace();
   }, [address]);
@@ -69,8 +74,7 @@ function MapPopup({
       </div>
 
       <MaplibreMap
-        latitude={lat}
-        longitude={lon}
+        ref={mRef}
         initialViewState={{
           zoom: 14,
         }}
