@@ -12,9 +12,11 @@
 		"typecheck": "react-router typegen && tsc"
 	},
 	"dependencies": {
+		"@gsap/react": "^2.1.2",
 		"@radix-ui/react-slider": "^1.2.4",
 		"@react-router/node": "^7.5.0",
 		"@react-router/serve": "^7.5.0",
+		"gsap": "^3.12.7",
 		"isbot": "^5.1.17",
 		"maplibre-gl": "^5.3.1",
 		"react": "^19.0.0",

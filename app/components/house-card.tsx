@@ -2,6 +2,7 @@ import { useFetcher, useRouteLoaderData } from "react-router";
 import type { House } from "~/routes/houses";
 import { SaveIcon } from "./save-icon";
 import type { clientLoader } from "~/root";
+import { useXLike } from "~/hooks/use-x-like";
 
 export function HouseCard({
 	house,
@@ -16,8 +17,12 @@ export function HouseCard({
 
 	const isSaving = intent === "save";
 
+	const { scope: card, particles } = useXLike({ condition: isSaving });
 	return (
-		<div className="card hover:scale-101 transition-transform duration-100 ease-in-out h-full">
+		<div
+			ref={card}
+			className="card hover:scale-101 transition-transform duration-100 ease-in-out h-full"
+		>
 			<img
 				src={house.photoURL}
 				alt={house.address}
@@ -60,7 +65,17 @@ export function HouseCard({
 						className="bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] absolute top-0 right-4 font-medium p-2 rounded-b-md transition-colors cursor-pointer border-b border-l border-r border-gray-200 dark:border-gray-700"
 						disabled={fetcher.state !== "idle"}
 					>
+						<span className="background-span size-8 pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] rounded-full opacity-0" />
 						<SaveIcon isSaved={!intent ? isSaved : isSaving} />
+
+						{particles.map((i, index) => (
+							<span
+								key={`${i[0]}-${i[1]}`}
+								className={`size-0.5 absolute rounded-full ${
+									index % 2 === 0 ? "bg-indigo-500" : "bg-indigo-400"
+								} opacity-0 particle top-1/2 left-1/2`}
+							/>
+						))}
 					</button>
 				</fetcher.Form>
 			</div>
