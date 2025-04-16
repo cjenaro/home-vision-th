@@ -15,27 +15,19 @@ export function PriceRange({
 	setPriceRange,
 }: PriceRangeProps) {
 	const [minPrice, maxPrice] = priceRange;
-	return (
-		<div className="flex  flex-col md:flex-row items-center gap-4">
-			<div className="flex items-center gap-1">
-				<span className="text-sm">Price:</span>
-				<span className="text-sm min-w-16">
-					{minPrice.toLocaleString("en-US", {
-						style: "currency",
-						currency: "USD",
-					})}
-				</span>
-				<span className="text-sm">-</span>
-				<span className="text-sm min-w-16">
-					{maxPrice.toLocaleString("en-US", {
-						style: "currency",
-						currency: "USD",
-					})}
-				</span>
-			</div>
 
+	function formatPrice(price: number) {
+		return price.toLocaleString("en-US", {
+			style: "currency",
+			currency: "USD",
+			maximumFractionDigits: 0,
+		});
+	}
+
+	return (
+		<div className="flex flex-col gap-6 w-full">
 			<Slider.Root
-				className="relative flex items-center w-full  md:w-[120px] h-5 touch-none select-none"
+				className="relative flex items-center w-full touch-none select-none"
 				value={priceRange}
 				min={minAvailablePrice}
 				max={maxAvailablePrice}
@@ -43,17 +35,25 @@ export function PriceRange({
 				minStepsBetweenThumbs={1}
 				onValueChange={(value) => setPriceRange(value as [number, number])}
 			>
-				<Slider.Track className="relative h-1.5 grow rounded-full bg-gray-200 dark:bg-gray-700">
-					<Slider.Range className="absolute h-full rounded-full bg-[hsl(var(--primary))]" />
+				<Slider.Track className="relative h-2 grow rounded-full bg-gray-200 dark:bg-gray-700">
+					<Slider.Range className="absolute h-full rounded-full bg-[hsl(var(--foreground))] dark:bg-[hsl(var(--dark-foreground))]" />
 				</Slider.Track>
 				<Slider.Thumb
-					className="block h-3 w-3 rounded-full bg-white border border-[hsl(var(--primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:ring-offset-2"
+					className="group flex items-center justify-center h-10 w-fit px-2 min-w-20 rounded-full bg-white dark:bg-gray-800 border-2 border-[hsl(var(--primary))] shadow-md hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:ring-offset-2"
 					aria-label="Minimum price"
-				/>
+				>
+					<span className="text-xs font-medium text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
+						{formatPrice(minPrice)}
+					</span>
+				</Slider.Thumb>
 				<Slider.Thumb
-					className="block h-3 w-3 rounded-full bg-white border border-[hsl(var(--primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:ring-offset-2"
+					className="group flex items-center justify-center h-10 w-fit px-2 min-w-20 rounded-full bg-white dark:bg-gray-800 border-2 border-[hsl(var(--primary))] shadow-md hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] focus:ring-offset-2"
 					aria-label="Maximum price"
-				/>
+				>
+					<span className="text-xs font-medium text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
+						{formatPrice(maxPrice)}
+					</span>
+				</Slider.Thumb>
 			</Slider.Root>
 		</div>
 	);

@@ -8,16 +8,7 @@ import { HouseCard } from "~/components/house-card";
 import { PriceRange } from "~/components/price-range";
 import { useInfiniteScroll } from "~/hooks/use-infinite-scroll";
 import { HouseCardSkeleton } from "~/components/house-card-skeleton";
-
-function debounce<T>(func: (...args: T[]) => void, wait: number) {
-	let timeout: NodeJS.Timeout;
-	return (...args: T[]) => {
-		clearTimeout(timeout);
-		timeout = setTimeout(() => {
-			func(...args);
-		}, wait);
-	};
-}
+import { Hero } from "~/components/hero";
 
 export async function clientLoader() {
 	const savedHouses = await getSavedHouses();
@@ -76,52 +67,54 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 	]);
 
 	return (
-		<div className="container mx-auto px-4 py-8">
-			<h1 className="text-3xl font-bold text-center mb-8 text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
-				Available Houses
-			</h1>
-			<div className="flex flex-col md:flex-row justify-center mb-8 items-center gap-4 border border-gray-300 dark:border-gray-700 rounded-md p-4 w-fit mx-auto text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
-				<PriceRange
-					minAvailablePrice={minAvailablePrice}
-					maxAvailablePrice={maxAvailablePrice}
-					priceRange={priceRange}
-					setPriceRange={setPriceRange}
-				/>
-			</div>
+		<>
+			<Hero />
+			<div className="container mx-auto px-4 pt-4 pb-8">
+				<div>
+					<div className="max-w-xl mx-auto w-full mb-12 p-2 bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] rounded-lg shadow-md dark:shadow-none">
+						<PriceRange
+							minAvailablePrice={minAvailablePrice}
+							maxAvailablePrice={maxAvailablePrice}
+							priceRange={priceRange}
+							setPriceRange={setPriceRange}
+						/>
+					</div>
 
-			<ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-				{houses
-					.filter(
-						(house) =>
-							house.price >= priceRange[0] && house.price <= priceRange[1],
-					)
-					.map((house, index) => (
-						<li
-							key={house.id}
-							className="opacity-0 animate-fade-in"
-							style={{
-								animationDelay: `${(index % 10) * 100}ms`,
-							}}
-						>
-							<HouseCard
-								house={house}
-								isSaved={savedHouses.some((h) => h.id === house.id)}
-							/>
-						</li>
-					))}
-				{isLoading && (
-					<li>
-						<HouseCardSkeleton />
-					</li>
-				)}
-				{endReason && (
-					<li>
-						<EndCard onClick={reset} endReason={endReason} />
-					</li>
-				)}
-			</ul>
-			<div ref={loadMoreRef} className="h-2" />
-		</div>
+					<ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+						{houses
+							.filter(
+								(house) =>
+									house.price >= priceRange[0] && house.price <= priceRange[1],
+							)
+							.map((house, index) => (
+								<li
+									key={house.id}
+									className="opacity-0 animate-fade-in"
+									style={{
+										animationDelay: `${(index % 10) * 100}ms`,
+									}}
+								>
+									<HouseCard
+										house={house}
+										isSaved={savedHouses.some((h) => h.id === house.id)}
+									/>
+								</li>
+							))}
+						{isLoading && (
+							<li>
+								<HouseCardSkeleton />
+							</li>
+						)}
+						{endReason && (
+							<li>
+								<EndCard onClick={reset} endReason={endReason} />
+							</li>
+						)}
+					</ul>
+					<div ref={loadMoreRef} className="h-2" />
+				</div>
+			</div>
+		</>
 	);
 }
 
