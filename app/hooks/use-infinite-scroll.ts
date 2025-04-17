@@ -34,7 +34,8 @@ export function useInfiniteScroll() {
 					fetchMoreHouses();
 				}
 			},
-			{ threshold: 0.1 },
+			// will start loading next page 500px before reaching end.
+			{ threshold: 0.1, rootMargin: "0px 0px 500px 0px" },
 		);
 
 		const currentRef = loadMoreRef.current;
