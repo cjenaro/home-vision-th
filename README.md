@@ -94,3 +94,18 @@ The application is available at https://home-vision.woodpecker.rocks/
 ### Why Kamal?
 
 Kamal is an open source tool great for small projects, it's easy to set up, fast to deploy and uses the already existing Dockerfile from the react-router template, it also provides SSL via Let's Encrypt.
+
+## AI Integration
+
+### Models Used in Cursor
+
+- Claude 3.7 Sonnet
+- GPT-4 Turbo
+
+### Some of the prompts used
+
+- "i want a nice hero section that will say some corny SaaS B2C phrase for finding your ideal home, it will have a CTA that will say something catchy, when clicking on it it will scroll the user down to the house listing. the hero will be just above the fold so users do see the range slider and the first couple of house listings"
+- "when i run the save house card fetcher, it stores the house on the cookie session, the issue is that it has a limit to the amount of data it can store, let's use indexed DB to store the houses data on the browser"
+- "the fetcher can fail, i want to retry if it fails, up to three times with exponential backoff"
+- "let's customize the colors to be reused across the app, like background and foreground colors, blues and reds"
+
