@@ -24,7 +24,7 @@ export function SaveIcon({ isSaved }: { isSaved: boolean }) {
 			viewBox="0 0 24 24"
 			strokeWidth={1.5}
 			stroke="currentColor"
-			className="size-6 text-indigo-500"
+			className="size-6 text-indigo-500 hover:fill-indigo-500/30 transition-colors ease-in-out duration-150"
 		>
 			<title>Save</title>
 			<path

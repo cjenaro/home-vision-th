@@ -141,7 +141,7 @@ export default function MapButton({ house }: { house: House }) {
 
 	return (
 		<div className="min-h-12 relative mt-4" ref={scope}>
-			<div className="absolute w-fit rounded-lg z-10 overflow-hidden cta bottom-0 left-0 flex items-end border bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] border-[hsl(var(--foreground))] dark:border-[hsl(var(--dark-foreground))]">
+			<div className="absolute w-fit rounded-lg z-10 overflow-hidden cta bottom-0 left-0 flex items-end border-2 bg-[hsl(var(--background))] dark:bg-[hsl(var(--dark-background))] border-[hsl(var(--foreground))]/60 hover:border-[hsl(var(--foreground))] dark:border-[hsl(var(--dark-foreground))]/60 dark:hover:border-[hsl(var(--dark-foreground))]/80 transition-colors ease-in-out duration-100">
 				{showMap && <MapPopup address={house.address} onClose={onCloseMap} />}
 				<button
 					type="button"

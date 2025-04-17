@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useLayoutEffect, type Dispatch, type SetStateAction } from "react";
 import * as Slider from "@radix-ui/react-slider";
 
 interface PriceRangeProps {
@@ -23,6 +23,17 @@ export function PriceRange({
 			maximumFractionDigits: 0,
 		});
 	}
+
+	useLayoutEffect(() => {
+		// there's an issue when setting absurdly high numbers where the
+		// right thumb would be very hard to change, this way we set a value that makes
+		// sense with the first loaded page of houses.
+		if (minPrice < minAvailablePrice && maxAvailablePrice < maxPrice)
+			setPriceRange([
+				Math.max(minPrice, minAvailablePrice),
+				Math.min(maxPrice, maxAvailablePrice),
+			]);
+	}, [minAvailablePrice, maxAvailablePrice, minPrice, maxPrice, setPriceRange]);
 
 	return (
 		<div className="flex flex-col gap-6 w-full">

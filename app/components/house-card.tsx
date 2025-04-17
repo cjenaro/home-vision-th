@@ -23,7 +23,7 @@ export function HouseCard({
 	return (
 		<div
 			ref={card}
-			className="card hover:scale-101 transition-transform duration-100 ease-in-out h-full grid grid-cols-1 grid-rows-[auto_1fr]"
+			className="card h-full grid grid-cols-1 grid-rows-[auto_1fr]"
 		>
 			<img
 				src={house.photoURL}
