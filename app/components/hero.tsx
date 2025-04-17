@@ -9,7 +9,7 @@ gsap.registerPlugin(useGSAP, ScrollToPlugin);
 export function Hero() {
 	const sliderRef = useRef<HTMLDivElement>(null);
 
-	useGSAP(() => {
+	const { contextSafe } = useGSAP(() => {
 		gsap.to(".bg-shape", {
 			xPercent: "random(-100, 100)",
 			yPercent: "random(-100, 100)",
@@ -21,7 +21,7 @@ export function Hero() {
 		});
 	});
 
-	function scrollToSlider() {
+	const scrollToSlider = contextSafe(() => {
 		if (sliderRef.current) {
 			gsap.to(window, {
 				duration: 0.4,
@@ -32,7 +32,7 @@ export function Hero() {
 				ease: "power1.in",
 			});
 		}
-	}
+	});
 
 	return (
 		<>
