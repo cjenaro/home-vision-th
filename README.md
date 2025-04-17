@@ -1,6 +1,6 @@
 # HomeVision Takehome
 
-https://github.com/user-attachments/assets/db4cb6ee-a604-4916-9dc1-db2b04064849
+https://github.com/user-attachments/assets/90d992af-7351-46e5-ae1e-261cbee01f99
 
 ## Stack
 
@@ -11,6 +11,7 @@ https://github.com/user-attachments/assets/db4cb6ee-a604-4916-9dc1-db2b04064849
 - 📖 [Kamal](https://kamal-deploy.org/) for deployment
 - [MapLibre](https://visgl.github.io/react-map-gl) and [OpenFreeMap](https://openfreemap.org) for the map, [zippopotam](https://api.zippopotam.us) for zip to lat and long
 - [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) to store the saved houses.
+- [GSAP](https://gsap.com/) for animations.
 
 ## Features
 
