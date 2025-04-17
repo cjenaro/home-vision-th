@@ -122,12 +122,8 @@ export default function MapButton({ house }: { house: House }) {
 		tl.to(".cta .open-map", { opacity: 0 });
 		tl.to(".cta", {
 			width: "100%",
-			ease: "power2.in",
-			duration: 0.1,
-		});
-		tl.to(".cta", {
 			height: 300,
-			ease: "power2.in",
+			ease: "elastic.out(0.3,0.4)",
 			duration: 0.2,
 		});
 	});
@@ -135,8 +131,12 @@ export default function MapButton({ house }: { house: House }) {
 	const onCloseMap = contextSafe(() => {
 		const tl = gsap.timeline({ onComplete: () => setShowMap(false) });
 		tl.to(".cta .open-map", { opacity: 1 });
-		tl.to(".cta", { height: "auto", ease: "power2.out", duration: 0.2 });
-		tl.to(".cta", { width: "auto", ease: "power2.out", duration: 0.1 });
+		tl.to(".cta", {
+			width: "auto",
+			height: "auto",
+			ease: "elastic.out(0.3,0.4)",
+			duration: 0.2,
+		});
 	});
 
 	return (

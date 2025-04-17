@@ -23,7 +23,7 @@ export function HouseCard({
 	return (
 		<div
 			ref={card}
-			className="card hover:scale-101 transition-transform duration-100 ease-in-out h-full"
+			className="card hover:scale-101 transition-transform duration-100 ease-in-out h-full grid grid-cols-1 grid-rows-[auto_1fr]"
 		>
 			<img
 				src={house.photoURL}
@@ -31,14 +31,14 @@ export function HouseCard({
 				loading="lazy"
 				className="aspect-video w-full object-cover"
 			/>
-			<div className="p-4">
-				<h3 className="text-xl font-bold text-[hsl(var(--primary))] dark:text-[hsl(var(--dark-primary))] mb-2">
+			<div className="p-4 grid grid-cols-1 gap-2">
+				<h3 className="text-xl font-bold text-[hsl(var(--primary))] dark:text-[hsl(var(--dark-primary))]">
 					{house.price.toLocaleString("en-US", {
 						style: "currency",
 						currency: "USD",
 					})}
 				</h3>
-				<p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] mb-2">
+				<p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))]">
 					{house.address}
 				</p>
 				<p className="text-[hsl(var(--foreground))] dark:text-[hsl(var(--dark-foreground))] text-sm opacity-80 dark:opacity-70">
